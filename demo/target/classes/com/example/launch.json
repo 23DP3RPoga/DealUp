@@ -1,0 +1,14 @@
+{
+  "configurations": [
+    {
+      "type": "java",
+      "request": "launch",
+      "name": "Launch JavaFX App",
+      "mainClass": "com.example.App",
+      "modulePaths": [
+        "${workspaceFolder}/target/classes"
+      ],
+      "preLaunchTask": "build"
+    }
+  ]
+}
