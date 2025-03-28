@@ -1,5 +1,5 @@
 # Ignore build output
-/demo/target/
+/target/
 
 # Ignore IDE settings
 /.vscode/
