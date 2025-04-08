@@ -63,7 +63,7 @@ public class PrimaryController {
 
     @FXML
     private void saveToCSV() {
-        String filePath = "C:\\Users\\Reinis\\Documents\\DealUp\\DealUp\\src\\main\\resources\\csv\\register.csv"; 
+        String filePath = "src/main/resources/csv/register.csv"; 
 
         // Get user input
         String name = nameID.getText();
@@ -132,7 +132,7 @@ public class PrimaryController {
 
     @FXML
     private void readFromCSV() {
-        String filePath = "C:\\Users\\Reinis\\Documents\\DealUp\\DealUp\\src\\main\\resources\\csv\\register.csv";
+        String filePath = "src/main/resources/csv/register.csv";
 
         try (CSVReader reader = new CSVReader(new FileReader(filePath))) {
             String[] nextLine;
@@ -140,6 +140,36 @@ public class PrimaryController {
                 System.out.println("Name: " + nextLine[0] + ", Surname: " + nextLine[1]);
             }
         } catch (IOException | com.opencsv.exceptions.CsvValidationException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void switchToLogin(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("login.fxml"));
+        stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+        scene = new Scene(root);
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    @FXML
+    private void werifyLogin(ActionEvent event) throws IOException {
+        String filePath = "src/main/resources/csv/register.csv";
+        String user = userID.getText();
+        String pass = passID.getText();
+
+        try (CSVReader reader = new CSVReader(new FileReader(filePath))) {
+            List<String[]> records = reader.readAll(); // This can throw CsvException
+            for (String[] record : records) {
+                if (record.length > 4 && record[4].equals(user) && record[5].equals(pass)) { // Username is at index 4 and password at index 5
+                    logLabel.setText("✅ Login successful!");
+                    return;
+                }
+            }
+            logLabel.setText("❌ Invalid username or password!");
+        } catch (IOException | com.opencsv.exceptions.CsvException e) {
+            loLabel.setText("⚠️ Error reading CSV file.");
             e.printStackTrace();
         }
     }
