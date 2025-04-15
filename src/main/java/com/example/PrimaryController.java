@@ -85,7 +85,17 @@ public class PrimaryController {
             return;
         }
 
-        
+        // Validation: Email must contain '@' and a '.' after '@'
+        if (!mail.matches("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$")) {
+            regLabel.setText("❌ Invalid email format!");
+            return;
+        }
+
+        if (!pass.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{6,}$")) {
+            regLabel.setText("❌ Password must have 1 uppercase, 1 lowercase, 1 special character and be at least 6 characters long!");
+            return;
+        }
+
         // Check if username already exists in CSV
         File file = new File(filePath);
         if (file.exists()) {
@@ -163,13 +173,13 @@ public class PrimaryController {
             List<String[]> records = reader.readAll(); // This can throw CsvException
             for (String[] record : records) {
                 if (record.length > 4 && record[4].equals(user) && record[5].equals(pass)) { // Username is at index 4 and password at index 5
-                    logLabel.setText("✅ Login successful!");
+                    regLabel.setText("✅ Login successful!");
                     return;
                 }
             }
-            logLabel.setText("❌ Invalid username or password!");
+            regLabel.setText("❌ Invalid username or password!");
         } catch (IOException | com.opencsv.exceptions.CsvException e) {
-            loLabel.setText("⚠️ Error reading CSV file.");
+            regLabel.setText("⚠️ Error reading CSV file.");
             e.printStackTrace();
         }
     }
