@@ -18,6 +18,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Label; // Import Label
 import javafx.scene.control.Button; // Import Button
 import com.opencsv.CSVWriter;
+import javafx.animation.PauseTransition;
+import javafx.util.Duration;
 
 
 
@@ -62,7 +64,7 @@ public class PrimaryController {
 
 
     @FXML
-    private void saveToCSV() {
+    private void saveToCSV(ActionEvent event) {
         String filePath = "src/main/resources/csv/register.csv"; 
 
         // Get user input
@@ -131,6 +133,21 @@ public class PrimaryController {
             mailID.clear();
             userID.clear();
             passID.clear();
+
+            PauseTransition pause = new PauseTransition(Duration.seconds(2));
+            pause.setOnFinished(pauseEvent -> { // Renamed inner variable to 'pauseEvent'
+                try {
+                    Parent root = FXMLLoader.load(getClass().getResource("secondary.fxml"));
+                    Stage stage = (Stage) regLabel.getScene().getWindow();
+                    stage.setScene(new Scene(root));
+                    stage.show();
+                } catch (IOException e) {
+                    regLabel.setText("⚠️ Error switching scene.");
+                    e.printStackTrace();
+                }
+            });
+            pause.play();
+
         } catch (IOException e) {
             regLabel.setText("❌ Error saving user. Please try again.");
             e.printStackTrace();
@@ -170,19 +187,53 @@ public class PrimaryController {
         String pass = passID.getText();
 
         try (CSVReader reader = new CSVReader(new FileReader(filePath))) {
-            List<String[]> records = reader.readAll(); // This can throw CsvException
+            List<String[]> records = reader.readAll();
             for (String[] record : records) {
-                if (record.length > 4 && record[4].equals(user) && record[5].equals(pass)) { // Username is at index 4 and password at index 5
-                    regLabel.setText("✅ Login successful!");
+                if (record.length > 5 && record[4].equals(user) && record[5].equals(pass)) {
+                    regLabel.setText("✅ Login successful! Redirecting...");
+
+                    PauseTransition pause = new PauseTransition(Duration.seconds(1.5));
+                    pause.setOnFinished(pauseEvent -> {
+                        try {
+                            FXMLLoader loader = new FXMLLoader(getClass().getResource("secondary.fxml"));
+                            Parent root = loader.load();
+
+                            Label label = (Label) root.lookup("#userLabel");
+                            if (label != null) {
+                                label.setText("Logged in as: " + user);
+                            }
+
+                            Stage stage = (Stage) regLabel.getScene().getWindow();
+                            stage.setScene(new Scene(root));
+                            stage.show();
+                        } catch (IOException e) {
+                            regLabel.setText("⚠️ Error switching scene.");
+                            e.printStackTrace();
+                        }
+                    });
+                    pause.play();
+
                     return;
                 }
             }
+
             regLabel.setText("❌ Invalid username or password!");
+
         } catch (IOException | com.opencsv.exceptions.CsvException e) {
             regLabel.setText("⚠️ Error reading CSV file.");
             e.printStackTrace();
         }
     }
+
+    @FXML
+    private void signOut(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("primary.fxml"));
+        stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+        scene = new Scene(root);
+        stage.setScene(scene);
+        stage.show();
+    }
+
 }
 
 

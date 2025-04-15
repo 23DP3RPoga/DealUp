@@ -2,6 +2,7 @@ package com.example;
 
 import java.io.IOException;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 
 public class SecondaryController {
 
@@ -10,4 +11,9 @@ public class SecondaryController {
         App.setRoot("primary");
     }
 
+    @FXML private Label userLabel;
+
+    public void setUsername(String username) {
+        userLabel.setText("Logged in as: " + username);
+    }
 }
