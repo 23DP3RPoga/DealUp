@@ -54,7 +54,7 @@
                      <children>
                         <Button mnemonicParsing="false" prefHeight="67.0" prefWidth="70.0" text="Icona" GridPane.columnIndex="9" GridPane.rowIndex="1" />
                         <Button fx:id="logOutID" mnemonicParsing="false" onAction="#signOut" prefHeight="68.0" prefWidth="147.0" text="Sing OUT" GridPane.columnIndex="6" GridPane.rowIndex="1" />
-                        <Button mnemonicParsing="false" prefHeight="67.0" prefWidth="276.0" text="Make Listing" GridPane.columnIndex="4" GridPane.rowIndex="1" />
+                        <Button fx:id="listingID" mnemonicParsing="false" onAction="#switchToMakeListing" prefHeight="67.0" prefWidth="276.0" text="Make Listing" GridPane.columnIndex="4" GridPane.rowIndex="1" />
                         <Label fx:id="userLabel" text="Label" GridPane.columnIndex="3">
                            <font>
                               <Font size="18.0" />

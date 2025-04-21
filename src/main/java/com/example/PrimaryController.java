@@ -1,13 +1,23 @@
 package com.example;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URL;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.regex.Pattern;
+
 import com.opencsv.CSVReader;
+import com.opencsv.CSVWriter;
+
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -15,20 +25,23 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Label; // Import Label
-import javafx.scene.control.Button; // Import Button
-import com.opencsv.CSVWriter;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.Label;
+import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.Image;
+import javafx.stage.FileChooser;
 import javafx.animation.PauseTransition;
 import javafx.util.Duration;
 
-
-
-
 public class PrimaryController {
-
+// implements Initializable 
     private Stage stage;
     private Scene scene;
     private Parent root;
+    private String[] category = {"Transport", "Real Estate", "Electronics", "Construction", "Clothing", "For home", "For kids", "Production", "Animals", "Hobbies"};
+
     @FXML private TextField nameID;
     @FXML private TextField surnameID;
     @FXML private TextField birthID;
@@ -37,13 +50,22 @@ public class PrimaryController {
     @FXML private TextField passID;
     @FXML private Label regLabel;
     @FXML private Button confirmID;
-    
+    @FXML private Button chooseImageButton;
+    @FXML private ImageView imageView;
+    @FXML private ChoiceBox<String> categoryID;
+
+    // Fields for makeListing.fxml
+    @FXML private TextField titleListID;
+    @FXML private TextArea descListID;
+    @FXML private TextField priceListID;
+    @FXML private TextField locationListID;
+    private File lastSelectedImageFile; // To store the selected image file
 
     @FXML
     private void switchToPrimary() throws IOException {
         App.setRoot("secondary");
-   }
-    
+    }
+
     @FXML
     public void switchToScene1(ActionEvent event) throws IOException {
         root = FXMLLoader.load(getClass().getResource("primary.fxml"));
@@ -52,7 +74,7 @@ public class PrimaryController {
         stage.setScene(scene);
         stage.show();
     }
-    
+
     @FXML
     public void switchToScene2(ActionEvent event) throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("register.fxml"));
@@ -61,7 +83,6 @@ public class PrimaryController {
         stage.setScene(scene);
         stage.show();
     }
-
 
     @FXML
     private void saveToCSV(ActionEvent event) {
@@ -234,6 +255,89 @@ public class PrimaryController {
         stage.show();
     }
 
+    @FXML
+    private void switchToMakeListing(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("makeListing.fxml"));
+        stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+        scene = new Scene(root);
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    @FXML
+    private void onChooseImage(ActionEvent event) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Select an Image");
+        fileChooser.getExtensionFilters().add(
+            new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg", "*.gif")
+        );
+
+        File selectedFile = fileChooser.showOpenDialog(chooseImageButton.getScene().getWindow());
+        if (selectedFile != null) {
+            try {
+                // Target folder to save the image
+                File targetDir = new File("C:/Users/Reinis/Documents/DealUp/DealUp/src/main/resources/images/listingIMG");
+                if (!targetDir.exists()) {
+                    targetDir.mkdirs(); // Create the folder if it doesn't exist
+                }
+
+                // Create a new file in the target directory with the same name
+                File destinationFile = new File(targetDir, selectedFile.getName());
+
+                // Copy the selected file to the destination
+                copyFile(selectedFile, destinationFile);
+
+                // Load the copied image and display it
+                Image image = new Image(destinationFile.toURI().toString());
+                imageView.setImage(image);
+
+                lastSelectedImageFile = destinationFile; // Store the selected image file
+
+                System.out.println("Image saved to: " + destinationFile.getAbsolutePath());
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    // File copy utility
+    private void copyFile(File source, File destination) throws IOException {
+        try (InputStream in = new FileInputStream(source);
+            OutputStream out = new FileOutputStream(destination)) {
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = in.read(buffer)) > 0) {
+                out.write(buffer, 0, bytesRead);
+            }
+        }
+    }
+
+    public void listingCSV() {
+        String title = titleListID.getText();
+        String description = descListID.getText();
+        String price = priceListID.getText();
+        String category = categoryID.getValue();
+        String location = locationListID.getText();
+        String imagePath = (lastSelectedImageFile != null) ? lastSelectedImageFile.getAbsolutePath() : "";
+    
+        // Full file path for the CSV
+        File csvFile = new File("C:/Users/Reinis/Documents/DealUp/DealUp/src/main/resources/csv/listing.csv");
+    
+        // Make sure parent folders exist
+        csvFile.getParentFile().mkdirs();
+    
+        String csvLine = String.format("%s,%s,%s,%s,%s,%s\n",
+                title, imagePath, description, price, category, location);
+    
+        try (FileWriter writer = new FileWriter(csvFile, true)) {
+            writer.write(csvLine);
+            System.out.println("Saved to CSV: " + csvLine);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
 }
 
 
