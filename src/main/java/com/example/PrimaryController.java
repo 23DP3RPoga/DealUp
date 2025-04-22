@@ -35,8 +35,8 @@ import javafx.stage.FileChooser;
 import javafx.animation.PauseTransition;
 import javafx.util.Duration;
 
-public class PrimaryController {
-// implements Initializable 
+public class PrimaryController implements Initializable {
+// 
     private Stage stage;
     private Scene scene;
     private Parent root;
@@ -52,14 +52,14 @@ public class PrimaryController {
     @FXML private Button confirmID;
     @FXML private Button chooseImageButton;
     @FXML private ImageView imageView;
-    @FXML private ChoiceBox<String> categoryID;
 
-    // Fields for makeListing.fxml
+    @FXML private ChoiceBox<String> categoryID;
     @FXML private TextField titleListID;
     @FXML private TextArea descListID;
     @FXML private TextField priceListID;
     @FXML private TextField locationListID;
-    private File lastSelectedImageFile; // To store the selected image file
+    @FXML private Label listLabel;
+    private File lastSelectedImageFile;
 
     @FXML
     private void switchToPrimary() throws IOException {
@@ -276,7 +276,7 @@ public class PrimaryController {
         if (selectedFile != null) {
             try {
                 // Target folder to save the image
-                File targetDir = new File("C:/Users/Reinis/Documents/DealUp/DealUp/src/main/resources/images/listingIMG");
+                File targetDir = new File("DealUp/src/main/resources/images/listingIMG");
                 if (!targetDir.exists()) {
                     targetDir.mkdirs(); // Create the folder if it doesn't exist
                 }
@@ -302,6 +302,7 @@ public class PrimaryController {
     }
 
     // File copy utility
+    @FXML
     private void copyFile(File source, File destination) throws IOException {
         try (InputStream in = new FileInputStream(source);
             OutputStream out = new FileOutputStream(destination)) {
@@ -312,7 +313,7 @@ public class PrimaryController {
             }
         }
     }
-
+    @FXML
     public void listingCSV() {
         String title = titleListID.getText();
         String description = descListID.getText();
@@ -320,24 +321,52 @@ public class PrimaryController {
         String category = categoryID.getValue();
         String location = locationListID.getText();
         String imagePath = (lastSelectedImageFile != null) ? lastSelectedImageFile.getAbsolutePath() : "";
-    
+
         // Full file path for the CSV
-        File csvFile = new File("C:/Users/Reinis/Documents/DealUp/DealUp/src/main/resources/csv/listing.csv");
-    
+        File csvFile = new File("DealUp/src/main/resources/csv/listing.csv");
+
         // Make sure parent folders exist
         csvFile.getParentFile().mkdirs();
-    
+
         String csvLine = String.format("%s,%s,%s,%s,%s,%s\n",
                 title, imagePath, description, price, category, location);
-    
+
+
+        if (title.isEmpty() || description.isEmpty() || price.isEmpty() || category == null || location.isEmpty()) {
+            listLabel.setText("❌ All fields must be filled!");
+            return;
+        }
+
+        if (!Pattern.matches("\\d+(\\.\\d{1,2})?", price)) {
+            listLabel.setText("❌ Price must be a number with up to 2 decimal places!");
+            return;
+        }
+
         try (FileWriter writer = new FileWriter(csvFile, true)) {
             writer.write(csvLine);
             System.out.println("Saved to CSV: " + csvLine);
+
+            titleListID.clear();
+            descListID.clear();
+            priceListID.clear();
+            categoryID.setValue(null);
+            locationListID.clear();
+            imageView.setImage(null);
+            lastSelectedImageFile = null;
+
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
     
+    @Override
+    public void initialize(URL url, ResourceBundle rb) {
+        if (categoryID == null) {
+            System.out.println("categoryID is null! Check your FXML file.");
+        } else {
+            categoryID.getItems().addAll(category);
+        }
+    }
 }
 
 
