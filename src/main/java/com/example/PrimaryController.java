@@ -9,12 +9,32 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.regex.Pattern;
 
+import javax.swing.text.html.ListView;
+
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
+
+import javafx.beans.property.SimpleStringProperty;
+
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -34,6 +54,7 @@ import javafx.scene.image.Image;
 import javafx.stage.FileChooser;
 import javafx.animation.PauseTransition;
 import javafx.util.Duration;
+import main.java.com.example.Listing;
 
 public class PrimaryController implements Initializable {
 // 
@@ -61,9 +82,24 @@ public class PrimaryController implements Initializable {
     @FXML private Label listLabel;
     private File lastSelectedImageFile;
 
+    @FXML private TableView<Listing> tableView;
+    @FXML private TableColumn<Listing, String> Title;
+    @FXML private TableColumn<Listing, String> Description;
+    @FXML private TableColumn<Listing, String> Price;
+    @FXML private TableColumn<Listing, String> Category;
+    @FXML private TableColumn<Listing, String> Location;
+    @FXML private TableColumn<Listing, Listing> Image;
+
+
+
+
     @FXML
-    private void switchToPrimary() throws IOException {
-        App.setRoot("secondary");
+    private void switchToSecondary(ActionEvent event) throws IOException {
+        root = FXMLLoader.load(getClass().getResource("secondary.fxml"));
+        stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+        scene = new Scene(root);
+        stage.setScene(scene);
+        stage.show();
     }
 
     @FXML
@@ -359,13 +395,120 @@ public class PrimaryController implements Initializable {
         }
     }
     
-    @Override
-    public void initialize(URL url, ResourceBundle rb) {
-        if (categoryID == null) {
-            System.out.println("categoryID is null! Check your FXML file.");
-        } else {
-            categoryID.getItems().addAll(category);
-        }
+    // @Override
+    // public void initialize(URL url, ResourceBundle rb) {
+    //     if (categoryID == null) {
+    //         System.out.println("categoryID is null! Check your FXML file.");
+    //     } else {
+    //         categoryID.getItems().addAll(category);
+    //     }
+
+    //     Title.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getTitle()));
+    //     Description.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getDescription()));
+    //     Price.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getPrice()));
+    //     Category.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getCategory()));
+    //     Location.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getLocation()));
+
+    //     Image.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue()));
+    //     Image.setCellFactory(col -> new TableCell<>() {
+    //         private final ImageView imageView = new ImageView();
+
+    //         @Override
+    //         protected void updateItem(Listing listing, boolean empty) {
+    //             super.updateItem(listing, empty);
+    //             if (empty || listing == null) {
+    //                 setGraphic(null);
+    //             } else {
+    //                 File file = new File(listing.getImagePath());
+    //                 if (file.exists()) {
+    //                     Image img = new Image(file.toURI().toString(), 100, 100, true, true);
+    //                     imageView.setImage(img);
+    //                     imageView.setFitWidth(100);
+    //                     imageView.setFitHeight(100);
+    //                     setGraphic(imageView);
+    //                 } else {
+    //                     setGraphic(null);
+    //                 }
+    //             }
+    //         }
+    //     });
+
+    //     loadCSVData();
+    // }
+
+
+    // private void loadCSVData() {
+    //     File csvFile = new File("src/main/resources/csv/listing.csv");
+    //     try (BufferedReader reader = new BufferedReader(new FileReader(csvFile))) {
+    //         String line;
+    //         while ((line = reader.readLine()) != null) {
+    //             String[] fields = line.split(",", -1);
+    //             if (fields.length >= 6) {
+    //                 listings.add(new Listing(fields[0], fields[1], fields[2], fields[3], fields[4], fields[5]));
+    //             }
+    //         }
+    //         tableView.setItems(listings);
+    //     } catch (IOException e) {
+    //         e.printStackTrace();
+    //     }
+    // }
+
+    // public static class Listing {
+    //     private final String title, imagePath, description, price, category, location;
+
+    //     public Listing(String title, String imagePath, String description, String price, String category, String location) {
+    //         this.title = title;
+    //         this.imagePath = imagePath;
+    //         this.description = description;
+    //         this.price = price;
+    //         this.category = category;
+    //         this.location = location;
+    //     }
+
+    //     public String getTitle() { return title; }
+    //     public String getImagePath() { return imagePath; }
+    //     public String getDescription() { return description; }
+    //     public String getPrice() { return price; }
+    //     public String getCategory() { return category; }
+    //     public String getLocation() { return location; }
+    // }
+    @FXML
+    private TextField titleField;
+    @FXML
+    private TextField descriptionField;
+    @FXML
+    private TextField priceField;
+    @FXML
+    private ListView<Listing> listingListView;
+
+    private List<Listing> listings = new ArrayList<>();
+
+    @FXML
+    private void initialize() {
+        // Example listings
+        listings.add(new Listing("Cool Shoes", "Used once", 50.0));
+        listings.add(new Listing("Vintage Watch", "Looks awesome", 120.0));
+        updateListView();
+    }
+
+    @FXML
+    private void addListing() {
+        String title = titleField.getText();
+        String description = descriptionField.getText();
+        double price = Double.parseDouble(priceField.getText());
+
+        Listing newListing = new Listing(title, description, price);
+        listings.add(newListing);
+        updateListView();
+
+        // Clear input fields
+        titleField.clear();
+        descriptionField.clear();
+        priceField.clear();
+    }
+
+    private void updateListView() {
+        listingListView.getItems().setAll(listings);
     }
 }
 

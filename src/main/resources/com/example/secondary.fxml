@@ -55,7 +55,7 @@
                         <Button mnemonicParsing="false" prefHeight="67.0" prefWidth="70.0" text="Icona" GridPane.columnIndex="9" GridPane.rowIndex="1" />
                         <Button fx:id="logOutID" mnemonicParsing="false" onAction="#signOut" prefHeight="68.0" prefWidth="147.0" text="Sing OUT" GridPane.columnIndex="6" GridPane.rowIndex="1" />
                         <Button fx:id="listingID" mnemonicParsing="false" onAction="#switchToMakeListing" prefHeight="67.0" prefWidth="276.0" text="Make Listing" GridPane.columnIndex="4" GridPane.rowIndex="1" />
-                        <Label fx:id="userLabel" text="Label" GridPane.columnIndex="3">
+                        <Label fx:id="userLabel" text="Username" GridPane.columnIndex="3">
                            <font>
                               <Font size="18.0" />
                            </font>
@@ -75,16 +75,14 @@
                 <RowConstraints maxHeight="677.0" minHeight="10.0" prefHeight="677.0" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
-                  <TableView prefHeight="600.0" prefWidth="1920.0" GridPane.rowIndex="1">
+                  <TableView fx:id="tableView" prefHeight="600.0" prefWidth="1920.0" GridPane.rowIndex="1">
                     <columns>
-                      <TableColumn prefWidth="75.0" text="Title" />
-                      <TableColumn prefWidth="67.0" text="De" />
-                        <TableColumn minWidth="0.0" prefWidth="83.0" text="scription" />
-                        <TableColumn prefWidth="75.0" text="Column X" />
-                        <TableColumn prefWidth="75.0" text="Column X" />
-                        <TableColumn prefWidth="75.0" text="Column X" />
-                        <TableColumn prefWidth="75.0" text="Column X" />
-                        <TableColumn prefWidth="75.0" />
+                      <TableColumn fx:id="Title" prefWidth="161.66666412353516" text="Title" />
+                      <TableColumn fx:id="Image" prefWidth="252.66665649414062" text="Image" />
+                        <TableColumn fx:id="Description" minWidth="0.0" prefWidth="875.3333435058594" text="Description" />
+                        <TableColumn fx:id="Price" prefWidth="203.3333740234375" text="Price" />
+                        <TableColumn fx:id="Category" prefWidth="167.333251953125" text="Category" />
+                        <TableColumn fx:id="Location" prefWidth="264.3333740234375" text="Location" />
                     </columns>
                   </TableView>
                </children>

@@ -30,6 +30,6 @@
       <TextField fx:id="locationListID" layoutX="258.0" layoutY="345.0" />
       <Label layoutX="258.0" layoutY="328.0" text="Location where to pick up" />
       <Button fx:id="makeListingID" layoutX="467.0" layoutY="307.0" mnemonicParsing="false" onAction="#listingCSV" text="Make a listing" />
-      <Button layoutX="467.0" layoutY="345.0" mnemonicParsing="false" onAction="#switchToScene2" text="Back" />
+      <Button layoutX="467.0" layoutY="345.0" mnemonicParsing="false" onAction="#switchToSecondary" text="Back" />
    </children>
 </AnchorPane>
