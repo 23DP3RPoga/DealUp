@@ -1,6 +1,5 @@
 package com.example;
 
-import com.example.Listing;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 
@@ -12,7 +11,4 @@ public class SecondaryController {
         userLabel.setText("Logged in as: " + username);
     }
 
-    public void handleListing(Listing listing) {
-        System.out.println("Handling listing: " + listing.getTitle());
-    }
 }
