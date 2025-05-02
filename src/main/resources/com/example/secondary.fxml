@@ -127,8 +127,8 @@
                
                <TableView fx:id="tableView" prefHeight="677.0" prefWidth="887.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                     <columns>
-                        <TableColumn fx:id="titleCol" prefWidth="75" text="" />
-                        <TableColumn fx:id="imageCol" prefWidth="100" text="Title" />
+                        <TableColumn fx:id="imageCol" prefWidth="75" text="" />
+                        <TableColumn fx:id="titleCol" prefWidth="100" text="Title" />
                         <TableColumn fx:id="descCol" prefWidth="200" text="Description" />
                         <TableColumn fx:id="priceCol" prefWidth="100" text="Price" />
                         <TableColumn fx:id="categoryCol" prefWidth="100" text="Category" />

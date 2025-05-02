@@ -1,11 +1,3 @@
 imagePath,Title,Discription,Price,Category,Date,Location
-Product 1,/images/img1.jpg,Description 1,19.99,Electronics,01-01-2025 12:00:00,New York
-Product 2,/images/img2.jpg,Description 2,29.99,Clothing,02-01-2025 13:30:00,London
-Product 3,,Description 3,9.99,Books,03-01-2025 14:00:00,Paris
-"C:\Users\Reinis\Documents\DealUp\DealUp\src\main\resources\images\listingIMG\Group 52.png","line","line with dots","1","For kids","02-05-2025 17:15:55","Riga"
-"C:\Users\Reinis\Documents\DealUp\DealUp\src\main\resources\images\listingIMG\Logo.png","description","k
-k
-k
-k
-k
-k","7.99","For home","02-05-2025 17:41:40","Riga"
+
+images/listingIMG/Hero.png,Product 1,Description 1,19.99,Electronics,01-01-2025 12:00:00,New York
