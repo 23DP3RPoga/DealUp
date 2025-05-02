@@ -1,5 +1,7 @@
 package com.example;
 
+import java.time.format.DateTimeFormatter;
+import java.time.LocalDateTime;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -10,6 +12,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.regex.Pattern;
@@ -44,13 +47,27 @@ import javafx.scene.image.Image;
 import javafx.stage.FileChooser;
 import javafx.animation.PauseTransition;
 import javafx.util.Duration;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TableColumn;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 public class PrimaryController implements Initializable {
-// 
+
     private Stage stage;
     private Scene scene;
     private Parent root;
     private String[] category = {"Transport", "Real Estate", "Electronics", "Construction", "Clothing", "For home", "For kids", "Production", "Animals", "Hobbies"};
+
+    @FXML private TableView<Listing> tableView;
+    @FXML private TableColumn<Listing, String> titleCol;
+    @FXML private TableColumn<Listing, String> imageCol;
+    @FXML private TableColumn<Listing, String> descCol;
+    @FXML private TableColumn<Listing, String> priceCol;
+    @FXML private TableColumn<Listing, String> categoryCol;
+    @FXML private TableColumn<Listing, String> dateCol;
+    @FXML private TableColumn<Listing, String> locationCol;
 
     @FXML private TextField nameID;
     @FXML private TextField surnameID;
@@ -63,6 +80,7 @@ public class PrimaryController implements Initializable {
     @FXML private Button chooseImageButton;
     @FXML private ImageView imageView;
 
+   
     @FXML private ChoiceBox<String> categoryID;
     @FXML private TextField titleListID;
     @FXML private TextArea descListID;
@@ -70,6 +88,7 @@ public class PrimaryController implements Initializable {
     @FXML private TextField locationListID;
     @FXML private Label listLabel;
     private File lastSelectedImageFile;
+    private LocalDateTime dateID; 
 
     @FXML
     private void switchToSecondary(ActionEvent event) throws IOException {
@@ -192,20 +211,7 @@ public class PrimaryController implements Initializable {
         }
     }
 
-    @FXML
-    private void readFromCSV() {
-        String filePath = "src/main/resources/csv/register.csv";
-
-        try (CSVReader reader = new CSVReader(new FileReader(filePath))) {
-            String[] nextLine;
-            while ((nextLine = reader.readNext()) != null) { // This can throw CsvValidationException
-                System.out.println("Name: " + nextLine[0] + ", Surname: " + nextLine[1]);
-            }
-        } catch (IOException | com.opencsv.exceptions.CsvValidationException e) {
-            e.printStackTrace();
-        }
-    }
-
+    
     @FXML
     private void switchToLogin(ActionEvent event) throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("login.fxml"));
@@ -307,7 +313,7 @@ public class PrimaryController implements Initializable {
 
                 lastSelectedImageFile = destinationFile; // Store the selected image file
 
-                System.out.println("Image saved to: " + destinationFile.getAbsolutePath());
+                System.out.println("Image saved to: " + destinationFile.getPath());    // Nomainiju uz relative nevis absoulute
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -327,14 +333,30 @@ public class PrimaryController implements Initializable {
             }
         }
     }
+    
     @FXML
     public void listingCSV() {
-        String title = titleListID.getText();
-        String description = descListID.getText();
-        String price = priceListID.getText();
-        String category = categoryID.getValue();
-        String location = locationListID.getText();
+        String title = titleListID.getText().trim();
+        String description = descListID.getText().trim();
+        String price = priceListID.getText().trim();
+        String category = categoryID.getValue() != null ? categoryID.getValue().trim() : "";
+        String location = locationListID.getText().trim();
+        LocalDateTime date = LocalDateTime.now();
+        DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+        String dateID = date.format(myFormatObj);
         String imagePath = (lastSelectedImageFile != null) ? lastSelectedImageFile.getAbsolutePath() : "";
+
+        // Validate if fields are empty
+        if (title.isEmpty() || description.isEmpty() || price.isEmpty() || category.isEmpty() || location.isEmpty()) {
+            listLabel.setText("❌ All fields must be filled!");
+            return;
+        }
+
+        // Validate price format
+        if (!Pattern.matches("\\d+(\\.\\d{1,2})?", price)) {
+            listLabel.setText("❌ Price must be a number with up to 2 decimal places!");
+            return;
+        }
 
         // Full file path for the CSV
         File csvFile = new File("DealUp/src/main/resources/csv/listing.csv");
@@ -342,24 +364,15 @@ public class PrimaryController implements Initializable {
         // Make sure parent folders exist
         csvFile.getParentFile().mkdirs();
 
-        String csvLine = String.format("%s,%s,%s,%s,%s,%s\n",
-                title, imagePath, description, price, category, location);
+        // Prepare data for CSV
+        String[] listingData = {imagePath, title, description, price, category, dateID, location};
 
+        // Write to CSV file
+        try (CSVWriter writer = new CSVWriter(new FileWriter(csvFile, true))) {
+            writer.writeNext(listingData);  // Use CSVWriter to properly format and handle special characters
+            System.out.println("Saved to CSV: " + Arrays.toString(listingData));
 
-        if (title.isEmpty() || description.isEmpty() || price.isEmpty() || category == null || location.isEmpty()) {
-            listLabel.setText("❌ All fields must be filled!");
-            return;
-        }
-
-        if (!Pattern.matches("\\d+(\\.\\d{1,2})?", price)) {
-            listLabel.setText("❌ Price must be a number with up to 2 decimal places!");
-            return;
-        }
-
-        try (FileWriter writer = new FileWriter(csvFile, true)) {
-            writer.write(csvLine);
-            System.out.println("Saved to CSV: " + csvLine);
-
+            // Clear input fields after saving
             titleListID.clear();
             descListID.clear();
             priceListID.clear();
@@ -372,7 +385,73 @@ public class PrimaryController implements Initializable {
             e.printStackTrace();
         }
     }
+
+
+    public void readFromCSV() {
+        String filePath = "DealUp/src/main/resources/csv/listing.csv";
     
+        try (CSVReader reader = new CSVReader(new FileReader(filePath))) {
+            String[] nextLine;
+            while ((nextLine = reader.readNext()) != null) {
+                // Skip empty lines or lines that don't have exactly 7 fields
+                if (nextLine.length != 7 || isRowEmpty(nextLine)) {
+                    System.out.println("Skipping line: " + Arrays.toString(nextLine));  // Debugging line
+                    continue;  // Skip this line if it doesn't have the required 7 fields or is empty
+                }
+                // Print the values from the CSV for debugging
+                System.out.println("Title: " + nextLine[1] + ", Description: " + nextLine[2]);
+            }
+        } catch (IOException | com.opencsv.exceptions.CsvValidationException e) {
+            e.printStackTrace();
+        }
+    }
+    
+
+
+private boolean isRowEmpty(String[] row) {
+for (String field : row) {
+    if (field != null && !field.trim().isEmpty()) {
+        return false;
+    }
+}
+return true;
+}
+
+
+@FXML
+private void loadListings() {
+    ObservableList<Listing> data = FXCollections.observableArrayList();
+    File csvFile = new File("src\\main\\resources\\csv\\listing.csv");
+
+    if (!csvFile.exists()) {
+        System.out.println("Listing CSV not found.");
+        return;
+    }
+
+    try (CSVReader reader = new CSVReader(new FileReader(csvFile))) {
+        String[] fields;
+        reader.readNext(); // Skip the header line if there is one
+        while ((fields = reader.readNext()) != null) {
+            if (fields.length >= 7) {
+                String title = fields[1].trim();
+                String image = fields[0].trim();
+                String description = fields[2].trim();
+                String price = fields[3].trim();
+                String category = fields[4].trim();
+                String date = fields[5].trim();
+                String location = fields[6].trim();
+
+                data.add(new Listing(title, image, description, price, category, date, location));
+            }
+        }
+    } catch (IOException | com.opencsv.exceptions.CsvException e) {
+        e.printStackTrace();
+    }
+
+    tableView.setItems(data);
+}
+
+
     @Override
      public void initialize(URL url, ResourceBundle rb) {
          if (categoryID == null) {
@@ -380,7 +459,19 @@ public class PrimaryController implements Initializable {
          } else {
              categoryID.getItems().addAll(category);
          }
+         if (tableView != null) {
+            titleCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getTitle()));
+            imageCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getImage()));
+            descCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getDescription()));
+            priceCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getPrice()));
+            categoryCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getCategory()));
+            dateCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getDate()));
+            locationCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getLocation()));
+        
+            loadListings(); // Load data on app start
+        }
      }
+
 
 }
 
