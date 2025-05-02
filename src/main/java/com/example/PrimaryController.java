@@ -296,7 +296,7 @@ public class PrimaryController implements Initializable {
         if (selectedFile != null) {
             try {
                 // Target folder to save the image
-                File targetDir = new File("DealUp/src/main/resources/images/listingIMG");
+                File targetDir = new File("src/main/resources/images/listingIMG");
                 if (!targetDir.exists()) {
                     targetDir.mkdirs(); // Create the folder if it doesn't exist
                 }
@@ -359,7 +359,7 @@ public class PrimaryController implements Initializable {
         }
 
         // Full file path for the CSV
-        File csvFile = new File("DealUp/src/main/resources/csv/listing.csv");
+        File csvFile = new File("src/main/resources/csv/listing.csv");
 
         // Make sure parent folders exist
         csvFile.getParentFile().mkdirs();
@@ -388,7 +388,7 @@ public class PrimaryController implements Initializable {
 
 
     public void readFromCSV() {
-        String filePath = "DealUp/src/main/resources/csv/listing.csv";
+        String filePath = "src/main/resources/csv/listing.csv";
     
         try (CSVReader reader = new CSVReader(new FileReader(filePath))) {
             String[] nextLine;
@@ -441,7 +441,7 @@ private void loadListings() {
                 String date = fields[5].trim();
                 String location = fields[6].trim();
 
-                data.add(new Listing(title, image, description, price, category, date, location));
+                data.add(new Listing(image, title, description, price, category, date, location));
             }
         }
     } catch (IOException | com.opencsv.exceptions.CsvException e) {
@@ -460,8 +460,8 @@ private void loadListings() {
              categoryID.getItems().addAll(category);
          }
          if (tableView != null) {
-            titleCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getTitle()));
             imageCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getImage()));
+            titleCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getTitle()));
             descCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getDescription()));
             priceCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getPrice()));
             categoryCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getCategory()));
