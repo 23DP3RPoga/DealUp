@@ -17,11 +17,10 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.regex.Pattern;
 
-
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 
-
+import javafx.scene.control.TableCell;
 
 
 import java.io.BufferedReader;
@@ -296,7 +295,7 @@ public class PrimaryController implements Initializable {
         if (selectedFile != null) {
             try {
                 // Target folder to save the image
-                File targetDir = new File("DealUp/src/main/resources/images/listingIMG");
+                File targetDir = new File("src/main/resources/images/listingIMG");
                 if (!targetDir.exists()) {
                     targetDir.mkdirs(); // Create the folder if it doesn't exist
                 }
@@ -344,7 +343,7 @@ public class PrimaryController implements Initializable {
         LocalDateTime date = LocalDateTime.now();
         DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
         String dateID = date.format(myFormatObj);
-        String imagePath = (lastSelectedImageFile != null) ? lastSelectedImageFile.getAbsolutePath() : "";
+        String imagePath = (lastSelectedImageFile != null) ? "images/listingIMG/" + lastSelectedImageFile.getName(): "";
 
         // Validate if fields are empty
         if (title.isEmpty() || description.isEmpty() || price.isEmpty() || category.isEmpty() || location.isEmpty()) {
@@ -359,7 +358,7 @@ public class PrimaryController implements Initializable {
         }
 
         // Full file path for the CSV
-        File csvFile = new File("DealUp/src/main/resources/csv/listing.csv");
+        File csvFile = new File("src/main/resources/csv/listing.csv");
 
         // Make sure parent folders exist
         csvFile.getParentFile().mkdirs();
@@ -388,7 +387,7 @@ public class PrimaryController implements Initializable {
 
 
     public void readFromCSV() {
-        String filePath = "DealUp/src/main/resources/csv/listing.csv";
+        String filePath = "src/main/resources/csv/listing.csv";
     
         try (CSVReader reader = new CSVReader(new FileReader(filePath))) {
             String[] nextLine;
@@ -408,69 +407,100 @@ public class PrimaryController implements Initializable {
     
 
 
-private boolean isRowEmpty(String[] row) {
-for (String field : row) {
-    if (field != null && !field.trim().isEmpty()) {
-        return false;
-    }
-}
-return true;
-}
-
-
-@FXML
-private void loadListings() {
-    ObservableList<Listing> data = FXCollections.observableArrayList();
-    File csvFile = new File("src\\main\\resources\\csv\\listing.csv");
-
-    if (!csvFile.exists()) {
-        System.out.println("Listing CSV not found.");
-        return;
-    }
-
-    try (CSVReader reader = new CSVReader(new FileReader(csvFile))) {
-        String[] fields;
-        reader.readNext(); // Skip the header line if there is one
-        while ((fields = reader.readNext()) != null) {
-            if (fields.length >= 7) {
-                String title = fields[1].trim();
-                String image = fields[0].trim();
-                String description = fields[2].trim();
-                String price = fields[3].trim();
-                String category = fields[4].trim();
-                String date = fields[5].trim();
-                String location = fields[6].trim();
-
-                data.add(new Listing(title, image, description, price, category, date, location));
-            }
+    private boolean isRowEmpty(String[] row) {
+    for (String field : row) {
+        if (field != null && !field.trim().isEmpty()) {
+            return false;
         }
-    } catch (IOException | com.opencsv.exceptions.CsvException e) {
-        e.printStackTrace();
+    }
+    return true;
     }
 
-    tableView.setItems(data);
-}
+
+    @FXML
+    private void loadListings() {
+        ObservableList<Listing> data = FXCollections.observableArrayList();
+        File csvFile = new File("src\\main\\resources\\csv\\listing.csv");
+
+        if (!csvFile.exists()) {
+            System.out.println("Listing CSV not found.");
+            return;
+        }
+
+        try (CSVReader reader = new CSVReader(new FileReader(csvFile))) {
+            String[] fields;
+            reader.readNext(); // Skip the header line if there is one
+            while ((fields = reader.readNext()) != null) {
+                if (fields.length >= 7) {
+                    String title = fields[1].trim();
+                    String image = fields[0].trim();
+                    String description = fields[2].trim();
+                    String price = fields[3].trim();
+                    String category = fields[4].trim();
+                    String date = fields[5].trim();
+                    String location = fields[6].trim();
+
+                    data.add(new Listing(image, title, description, price, category, date, location));
+                }
+            }
+        } catch (IOException | com.opencsv.exceptions.CsvException e) {
+            e.printStackTrace();
+        }
+
+        tableView.setItems(data);
+    }
 
 
     @Override
-     public void initialize(URL url, ResourceBundle rb) {
-         if (categoryID == null) {
-             System.out.println("categoryID is null! Check your FXML file.");
-         } else {
-             categoryID.getItems().addAll(category);
-         }
-         if (tableView != null) {
+    public void initialize(URL url, ResourceBundle rb) {
+        if (categoryID == null) {
+            System.out.println("categoryID is null! Check your FXML file.");
+        } else {
+            categoryID.getItems().addAll(category);
+        }
+
+        if (tableView != null) {
+            // Set up other columns
             titleCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getTitle()));
-            imageCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getImage()));
             descCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getDescription()));
             priceCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getPrice()));
             categoryCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getCategory()));
             dateCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getDate()));
             locationCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getLocation()));
-        
-            loadListings(); // Load data on app start
+
+            // Set up the image column to display images
+            imageCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getImage()));
+            imageCol.setCellFactory(col -> new TableCell<>() {
+                private final ImageView imageView = new ImageView();
+
+                @Override
+                protected void updateItem(String imagePath, boolean empty) {
+                    super.updateItem(imagePath, empty);
+                    if (empty || imagePath == null || imagePath.isEmpty()) {
+                        setGraphic(null);
+                    } else {
+                        File imageFile = new File("src/main/resources/" + imagePath);
+                        if (imageFile.exists()) {
+                            Image image = new Image(imageFile.toURI().toString());
+                            imageView.setImage(image);
+
+                            // Configure the ImageView to maintain aspect ratio
+                            imageView.setPreserveRatio(true);
+                            imageView.setFitWidth(175); // Set the desired width
+                            imageView.setFitHeight(175); // Set the desired height
+
+                            setGraphic(imageView);
+                        } else {
+                            setGraphic(null);
+                        }
+                    }
+                }
+            });
+
+            // Load data into the table
+            loadListings();
         }
-     }
+    }
 
 
 }

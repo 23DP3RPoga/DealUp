@@ -1,4 +1,3 @@
 imagePath,Title,Discription,Price,Category,Date,Location
-Product 1,/images/img1.jpg,Description 1,19.99,Electronics,01-01-2025 12:00:00,New York
-Product 2,/images/img2.jpg,Description 2,29.99,Clothing,02-01-2025 13:30:00,London
-Product 3,,Description 3,9.99,Books,03-01-2025 14:00:00,Paris
+
+images/listingIMG/Hero.png,Product 1,Description 1,19.99,Electronics,01-01-2025 12:00:00,New York
