@@ -91,6 +91,7 @@ public class PrimaryController implements Initializable {
     @FXML private TextField titleListID;
     @FXML private TextArea descListID;
     @FXML private TextField priceListID;
+    @FXML private Label fee;
     @FXML private TextField locationListID;
     @FXML private Label listLabel;
     @FXML private Label user;
@@ -531,6 +532,7 @@ public class PrimaryController implements Initializable {
         }
 
         if (tableView != null) {
+
             // Set up other columns
             titleCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getTitle()));
             descCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getDescription()));
@@ -572,7 +574,34 @@ public class PrimaryController implements Initializable {
             // Load data into the table
             loadListings();
         }
+
+        if (priceListID != null && fee != null) {
+            priceListID.textProperty().addListener((obs, oldText, newText) -> {
+                try {
+                    double price = Double.parseDouble(newText.trim());
+                    
+                    double feeAmount;
+        
+                    // Apply different fee rates based on the price
+                    if (price < 10) {
+                        feeAmount = 2.0; // Fee is 2 EUR if price is below 10 EUR
+                    } else if (price <= 500) {
+                        feeAmount = price * 0.03; // 3% fee if price is between 10 and 500 EUR
+                    } else if (price <= 2000) {
+                        feeAmount = price * 0.02; // 2% fee if price is between 500 and 2000 EUR
+                    } else {
+                        feeAmount = price * 0.018; // 1.4% fee if price is above 2000 EUR
+                    }
+        
+                    fee.setText(String.format("Fee: €%.2f", feeAmount)); // Update the fee label
+                } catch (NumberFormatException e) {
+                    fee.setText("Invalid price"); // Handle invalid input
+                }
+            });
+        }
     }
+
+    
 
     @FXML
     private TextField searchBar;
