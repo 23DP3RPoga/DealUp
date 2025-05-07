@@ -1,3 +1,17 @@
-imagePath,Title,Discription,Price,Category,Date,Location
-
-images/listingIMG/Hero.png,Product 1,Description 1,19.99,Electronics,01-01-2025 12:00:00,New York
+imagePath,Title,Discription,Price,Category,Date,Location,Owner
+"images/listingIMG/transport1.png","Car for Sale","A well-maintained sedan with low mileage.","5000","Transport","01-01-2024 10:00:00","Riga","Admin1"
+"images/listingIMG/realestate1.png","Apartment for Rent","Spacious 2-bedroom apartment in the city center.","800","Real Estate","02-02-2024 12:30:00","Riga",""
+"images/listingIMG/electronics1.png","Smartphone","Latest model with advanced features.","999","Electronics","03-03-2024 15:45:00","Riga",""
+"images/listingIMG/construction1.png","Cement Mixer","High-quality cement mixer for construction projects.","1200","Construction","04-04-2024 09:15:00","Riga",""
+"images/listingIMG/clothing1.png","Jacket","Stylish and warm jacket.","150","Clothing","05-05-2024 11:20:00","Riga",""
+"images/listingIMG/forhome1.png","Sofa Set","Comfortable and modern sofa set for your living room.","700","For home","06-06-2024 14:10:00","Riga",""
+"images/listingIMG/forkids1.png","Toy Car","Fun and safe toy car for kids.","50","For kids","07-07-2024 16:00:00","Riga",""
+"images/listingIMG/production1.png","3D Printer","Efficient 3D printer for production needs.","2000","Production","08-08-2024 13:30:00","Riga",""
+"images/listingIMG/animals1.png","Dog for Adoption","Friendly and playful Golden retriever.","0","Animals","09-09-2024 17:45:00","Riga",""
+"images/listingIMG/hobbies1.png","Guitar","Acoustic guitar in excellent condition.","300","Hobbies","10-10-2024 19:00:00","Riga",""
+"images/listingIMG/realestate1.png","House for Rent","Spacious 2-bedroom apartment in the city center.","800","Real Estate","02-02-2024 12:30:00","Riga",""
+"images/listingIMG/realestate1.png","Apartment for Rent","Spacious 2-bedroom apartment in the city center.","800","Unlisted","02-02-2024 12:30:00","Riga",""
+"","Test","Test","412","Real Estate","06-05-2025 21:01:15","Riga","Admin1"
+"","Test","stse","21","Electronics","06-05-2025 21:09:02","Riga","Admin1"
+"","Title","TEST","21","Electronics","06-05-2025 21:19:13","rIGA","Admin1"
+"","ben","ben","231","Electronics","07-05-2025 13:32:18","Riga","abos"

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
@@ -39,9 +40,9 @@
             <PasswordField fx:id="passID" GridPane.columnIndex="1" GridPane.rowIndex="5" />
             <PasswordField GridPane.columnIndex="1" GridPane.rowIndex="6" />
             <TextField fx:id="nameID" GridPane.columnIndex="1" />
-            <TextField fx:id="birthID" GridPane.columnIndex="1" GridPane.rowIndex="2" />
             <TextField fx:id="mailID" GridPane.columnIndex="1" GridPane.rowIndex="3" />
             <TextField fx:id="userID" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+            <DatePicker fx:id="birthID" prefHeight="25.0" prefWidth="208.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
          </children>
          <effect>
             <Blend />
@@ -49,11 +50,11 @@
       </GridPane>
       <Button fx:id="backS1" layoutX="94.0" layoutY="340.0" mnemonicParsing="false" onAction="#switchToScene1" text="Back" />
       <Button fx:id="confirmID" layoutX="162.0" layoutY="340.0" mnemonicParsing="false" onAction="#saveToCSV" text="Confirm" />
-      <Label layoutX="342.0" layoutY="344.0" text="Label" />
       <Label fx:id="regLabel" layoutX="243.0" layoutY="20.0" text="Registration">
          <font>
             <Font size="24.0" />
          </font>
       </Label>
+      <Button layoutX="338.0" layoutY="340.0" mnemonicParsing="false" onAction="#switchToLogin" prefHeight="25.0" prefWidth="165.0" scaleShape="false" text="Already have an account?" />
    </children>
 </AnchorPane>

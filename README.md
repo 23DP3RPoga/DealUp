@@ -1,7 +1,9 @@
-#Maven Comandas 
+Palicis mylistings paradit tabula
 
-cd demo
 
-mvn javafx:run
 
-mvn clean install
+
+
+
+Var pievienot paroles šifresanu
+Vajag optimizet
