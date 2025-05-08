@@ -14,13 +14,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.regex.Pattern;
 
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
+import com.opencsv.exceptions.CsvException;
 
 import javafx.scene.control.TableCell;
 import javafx.fxml.FXML;
@@ -32,6 +35,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
@@ -52,6 +56,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.layout.HBox;
 import javafx.concurrent.Task;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 
 public class PrimaryController implements Initializable {
     
@@ -68,7 +73,17 @@ public class PrimaryController implements Initializable {
     @FXML private TableColumn<Listing, String> categoryCol;
     @FXML private TableColumn<Listing, String> dateCol;
     @FXML private TableColumn<Listing, String> locationCol;
-    @FXML private TableColumn<Listing, String> optionsCol;
+
+    @FXML private TableView<Listing> myListings;
+     
+    
+    @FXML
+    private TableColumn<Listing, String> titleCol2, descCol2, priceCol2, categoryCol2, dateCol2, locationCol2, imageCol2;
+    
+    @FXML
+    private TableColumn<Listing, Void> optionsCol;
+    
+
     
     @FXML private TextField nameID;
     @FXML private TextField surnameID;
@@ -480,7 +495,7 @@ public class PrimaryController implements Initializable {
     }
     return true;
     }
-    
+    private boolean isUserListingsLoaded = false;
 
     @FXML
     private void loadListings() {
@@ -523,85 +538,8 @@ public class PrimaryController implements Initializable {
     }
 
 
-    @Override
-    public void initialize(URL url, ResourceBundle rb) {
-        if (categoryID == null) {
-            System.out.println("categoryID is null! Check your FXML file.");
-        } else {
-            categoryID.getItems().addAll(category);
-        }
-
-        if (tableView != null) {
-
-            // Set up other columns
-            titleCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getTitle()));
-            descCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getDescription()));
-            priceCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getPrice()));
-            categoryCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getCategory()));
-            dateCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getDate()));
-            locationCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getLocation()));
-            // Set up the image column to display images
-            imageCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getImage()));
-            imageCol.setCellFactory(col -> new TableCell<>() {
-                private final ImageView imageView = new ImageView();
-
-                @Override
-                protected void updateItem(String imagePath, boolean empty) {
-                    super.updateItem(imagePath, empty);
-                    if (empty || imagePath == null || imagePath.isEmpty()) {
-                        setGraphic(null);
-                    } else {
-                        File imageFile = new File("src/main/resources/" + imagePath);
-                        if (imageFile.exists()) {
-                            Image image = new Image(imageFile.toURI().toString());
-                            imageView.setImage(image);
-
-                            // Configure the ImageView to maintain aspect ratio
-
-                            imageView.setPreserveRatio(true);
-                            imageView.setFitWidth(100); // Set the desired width
-                            imageView.setFitHeight(100); // Set the desired height
-
-                            setGraphic(imageView);
-                        } else {
-                            setGraphic(null);
-                        }
-                    }
-                }
-            });
 
 
-            // Load data into the table
-            loadListings();
-        }
-
-        if (priceListID != null && fee != null) {
-            priceListID.textProperty().addListener((obs, oldText, newText) -> {
-                try {
-                    double price = Double.parseDouble(newText.trim());
-                    
-                    double feeAmount;
-        
-                    // Apply different fee rates based on the price
-                    if (price < 10) {
-                        feeAmount = 2.0; // Fee is 2 EUR if price is below 10 EUR
-                    } else if (price <= 500) {
-                        feeAmount = price * 0.03; // 3% fee if price is between 10 and 500 EUR
-                    } else if (price <= 2000) {
-                        feeAmount = price * 0.02; // 2% fee if price is between 500 and 2000 EUR
-                    } else {
-                        feeAmount = price * 0.018; // 1.4% fee if price is above 2000 EUR
-                    }
-        
-                    fee.setText(String.format("Fee: €%.2f", feeAmount)); // Update the fee label
-                } catch (NumberFormatException e) {
-                    fee.setText("Invalid price"); // Handle invalid input
-                }
-            });
-        }
-    }
-
-    
 
     @FXML
     private TextField searchBar;
@@ -699,12 +637,12 @@ public class PrimaryController implements Initializable {
     private void switchToProfile(ActionEvent event) throws IOException {
         String username  = user.getText();
         root = FXMLLoader.load(getClass().getResource("Profile.fxml"));
-        Label userLabel = (Label) root.lookup("#user");
-        if (userLabel != null) {
-            userLabel.setText(username);
-
-        // Read from CSV 
-        String filePath = "src/main/resources/csv/register.csv";
+        Label user = (Label) root.lookup("#user");
+        if (user != null) {
+            user.setText(username);
+        
+            // Read from CSV 
+            String filePath = "src/main/resources/csv/register.csv";
             try (CSVReader reader = new CSVReader(new FileReader(filePath))) {
                 List<String[]> records = reader.readAll();
                 for (String[] record : records) {
@@ -884,54 +822,359 @@ public class PrimaryController implements Initializable {
             regLabel.setText("⚠️ Error updating password. Please try again.");
             e.printStackTrace();
         }
-    }
+    }   
+  
 
-   @FXML
+   
+    @FXML
     private void switchToMyListings(ActionEvent event) throws IOException, com.opencsv.exceptions.CsvException {
         String username = user.getText();
         root = FXMLLoader.load(getClass().getResource("userListings.fxml"));
-        Label userLabel = (Label) root.lookup("#user");
-        if (userLabel != null) {
-            userLabel.setText(username);
 
-        // Read from CSV the name and surname of the user 
+        Label userLabel = (Label) root.lookup("#user");
+             if (userLabel != null) { 
+                userLabel.setText(username);
+              }
+        // Read from register.csv to get name + surname
         String filePath = "src/main/resources/csv/register.csv";
         try (CSVReader reader = new CSVReader(new FileReader(filePath))) {
             List<String[]> records = reader.readAll();
             for (String[] record : records) {
-            if (record.length > 4 && record[4].equals(username)) { // Username is at index 4
-                String name = record[0]; // Name is at index 0
-                String surname = record[1]; // Surname is at index 1
-                Label label = (Label) root.lookup("#userLabel");
-                if (label != null) {
-                label.setText(name + " " + surname);
+                if (record.length > 4 && record[4].equals(username)) {
+                    String name = record[0];
+                    String surname = record[1];
+                    
+                    Label nameLabel = (Label) root.lookup("#userLabel");
+                    if (nameLabel != null) {
+                        nameLabel.setText(name + " " + surname);
+                    }
+                    
+                    break;
                 }
-                break;
             }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }   
-        try {
-            String Owner = user.getText();
-            ObservableList<Listing> results = searchService.search(Owner);
-            tableView.setItems(results);
-        } catch (IOException | com.opencsv.exceptions.CsvValidationException e) {
-            e.printStackTrace();
         }
-        stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+    
+        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         scene = new Scene(root);
         stage.setScene(scene);
         stage.show();
-    }}
-    } 
+
+    }
+
+    @FXML
+    private void loadUserListings() {
+        Task<ObservableList<Listing>> task = new Task<>() {
+            @Override
+            protected ObservableList<Listing> call() throws Exception {
+                String username = "Admin1";
+                System.out.println(username+"Test");
+                ObservableList<Listing> data = FXCollections.observableArrayList();
+                File csvFile = new File("src\\main\\resources\\csv\\listing.csv");
+    
+                if (!csvFile.exists()) {
+                    System.out.println("Listing CSV not found.");
+                    return data;
+                }
+                try (CSVReader reader = new CSVReader(new FileReader(csvFile))) {
+                    String[] fields;
+                    
+
+                    reader.readNext(); // Skip header
+                    while ((fields = reader.readNext()) != null) {
+
+                        if (fields[7].equals(username)) {
+
+                            String title = fields[1].trim();
+                            String image = fields[0].trim();
+                            String description = fields[2].trim();
+                            String price = fields[3].trim();
+                            String category = fields[4].trim();
+                            String date = fields[5].trim();
+                            String location = fields[6].trim();
+
+                            data.add(new Listing(image, title, description, price, category, date, location));
+                        }
+
+                       
+                        }
+                    }
+                return data;
+            }
+        };
+    
+        task.setOnSucceeded(event -> myListings.setItems(task.getValue()));
+        task.setOnFailed(event -> task.getException().printStackTrace());
+    
+        new Thread(task).start();
+    }
 
 
-  
-      
 
 
 
 
 
 
+    @Override
+    public void initialize(URL url, ResourceBundle rb) {
+
+    
+    
+        if (myListings != null) {
+            // Set up table columns
+            titleCol2.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getTitle()));
+            descCol2.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getDescription()));
+            priceCol2.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getPrice()));
+            categoryCol2.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getCategory()));
+            dateCol2.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getDate()));
+            locationCol2.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getLocation()));
+    
+            // Set up image column
+            imageCol2.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getImage()));
+            imageCol2.setCellFactory(col -> new TableCell<>() {
+                private final ImageView imageView = new ImageView();
+    
+                @Override
+                protected void updateItem(String imagePath, boolean empty) {
+                    super.updateItem(imagePath, empty);
+                    if (empty || imagePath == null || imagePath.isEmpty()) {
+                        setGraphic(null);
+                    } else {
+                        File imageFile = new File("src/main/resources/" + imagePath);
+                        if (imageFile.exists()) {
+                            Image image = new Image(imageFile.toURI().toString());
+                            imageView.setImage(image);
+                            imageView.setPreserveRatio(true);
+                            imageView.setFitWidth(100);
+                            imageView.setFitHeight(100);
+                            setGraphic(imageView);
+                        } else {
+                            setGraphic(null);
+                        }
+                    }
+                }
+            });
+    
+            // Set up options column
+            optionsCol.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(null));
+            optionsCol.setCellFactory(col -> new TableCell<>() {
+                private final Button editButton = new Button("Edit");
+                private final Button deleteButton = new Button("Delete");
+                private final HBox buttonBox = new HBox(5, editButton, deleteButton);
+    
+                {
+                    editButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
+                    deleteButton.setStyle("-fx-background-color: #f44336; -fx-text-fill: white;");
+    
+                    editButton.setOnAction(event -> {
+                        Listing listing = getTableView().getItems().get(getIndex());
+                        System.out.println("Editing: " + listing.getTitle());
+                        openEditDialog(listing);
+                    });
+    
+                    deleteButton.setOnAction(event -> {
+                        Listing listing = getTableView().getItems().get(getIndex());
+                        System.out.println("Deleting: " + listing.getTitle());
+                        deleteListing(listing);
+                    });
+                      
+                }
+    
+                @Override
+              protected void updateItem(Void item, boolean empty) {
+                  super.updateItem(item, empty);
+                  setGraphic(empty ? null : buttonBox);
+              }
+
+               
+
+            });
+                loadUserListings(); 
+
+        }
+    
+    
+            if (tableView != null) {
+    
+                // Set up other columns
+                titleCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getTitle()));
+                descCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getDescription()));
+                priceCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getPrice()));
+                categoryCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getCategory()));
+                dateCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getDate()));
+                locationCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getLocation()));
+                // Set up the image column to display images
+                imageCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getImage()));
+                imageCol.setCellFactory(col -> new TableCell<>() {
+                    private final ImageView imageView = new ImageView();
+    
+                    @Override
+                    protected void updateItem(String imagePath, boolean empty) {
+                        super.updateItem(imagePath, empty);
+                        if (empty || imagePath == null || imagePath.isEmpty()) {
+                            setGraphic(null);
+                        } else {
+                            File imageFile = new File("src/main/resources/" + imagePath);
+                            if (imageFile.exists()) {
+                                Image image = new Image(imageFile.toURI().toString());
+                                imageView.setImage(image);
+    
+                                // Configure the ImageView to maintain aspect ratio
+    
+                                imageView.setPreserveRatio(true);
+                                imageView.setFitWidth(100); // Set the desired width
+                                imageView.setFitHeight(100); // Set the desired height
+    
+                                setGraphic(imageView);
+                            } else {
+                                setGraphic(null);
+                            }
+                        }
+                    }
+                });
+    
+    
+                
+                loadListings();
+            } 
+    
+            if (priceListID != null && fee != null) {
+                priceListID.textProperty().addListener((obs, oldText, newText) -> {
+                    try {
+                        double price = Double.parseDouble(newText.trim());
+                        
+                        double feeAmount;
+            
+                        // Apply different fee rates based on the price
+                        if (price < 10) {
+                            feeAmount = 2.0; // Fee is 2 EUR if price is below 10 EUR
+                        } else if (price <= 500) {
+                            feeAmount = price * 0.03; // 3% fee if price is between 10 and 500 EUR
+                        } else if (price <= 2000) {
+                            feeAmount = price * 0.02; // 2% fee if price is between 500 and 2000 EUR
+                        } else {
+                            feeAmount = price * 0.018; // 1.4% fee if price is above 2000 EUR
+                        }
+            
+                        fee.setText(String.format("Fee: €%.2f", feeAmount)); // Update the fee label
+                    } catch (NumberFormatException e) {
+                        fee.setText("Invalid price"); // Handle invalid input
+                    }
+                });
+            }
+        }
+    
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        private void openEditDialog(Listing listing) {
+        // Open a dialog to edit the listing details
+        // For now, we'll just update the title of the listing as an example
+
+        TextInputDialog dialog = new TextInputDialog(listing.getTitle());
+        dialog.setTitle("Edit Listing");
+        dialog.setHeaderText("Edit the title of the listing:");
+        dialog.setContentText("Title:");
+
+        Optional<String> result = dialog.showAndWait();
+        result.ifPresent(newTitle -> {
+            // Update the title of the listing in the table view
+            listing.setTitle(newTitle);
+            // After editing, update the CSV file
+            updateListingInFile(listing);
+        });
+    }
+
+    // Delete the listing from the table and CSV file
+    private void deleteListing(Listing listing) {
+        // Remove the listing from the table view
+        myListings.getItems().remove(listing);
+
+        // Now, update the CSV file by removing the corresponding record
+        deleteListingFromFile(listing);
+    }
+
+    // Update the modified listing in the CSV file
+    private void updateListingInFile(Listing updatedListing) {
+        File csvFile = new File("src/main/resources/csv/listing.csv");
+
+        if (!csvFile.exists()) {
+            System.out.println("Listing CSV not found.");
+            return;
+        }
+
+        try (CSVReader reader = new CSVReader(new FileReader(csvFile))) {
+            List<String[]> records = reader.readAll();
+            List<String[]> updatedRecords = new ArrayList<>();
+
+            for (String[] record : records) {
+                if (record.length >= 8 && record[1].equals(updatedListing.getTitle())) {
+                    // Update the record with new values
+                    record[0] = updatedListing.getImage(); // Update image path
+                    record[1] = updatedListing.getTitle(); // Update title
+                    record[2] = updatedListing.getDescription(); // Update description
+                    record[3] = updatedListing.getPrice(); // Update price
+                    record[4] = updatedListing.getCategory(); // Update category
+                    // Update date
+                    LocalDateTime now = LocalDateTime.now();
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+                    record[5] = now.format(formatter); // Update date with the current local time
+                    record[6] = updatedListing.getLocation(); // Update location
+                }
+                updatedRecords.add(record);
+            }
+
+            // Write the updated records back to the CSV file
+            try (CSVWriter writer = new CSVWriter(new FileWriter(csvFile))) {
+                writer.writeAll(updatedRecords);
+            }
+        } catch (IOException | CsvException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Delete the listing from the CSV file
+    private void deleteListingFromFile(Listing listing) {
+        File csvFile = new File("src/main/resources/csv/listing.csv");
+
+        if (!csvFile.exists()) {
+            System.out.println("Listing CSV not found.");
+            return;
+        }
+
+        try (CSVReader reader = new CSVReader(new FileReader(csvFile))) {
+            List<String[]> records = reader.readAll();
+            List<String[]> updatedRecords = new ArrayList<>();
+
+            for (String[] record : records) {
+                if (!(record.length >= 8 && record[1].equals(listing.getTitle()))) {
+                    updatedRecords.add(record); // Keep records that don't match the listing to delete
+                }
+            }
+
+            // Write the updated records back to the CSV file
+            try (CSVWriter writer = new CSVWriter(new FileWriter(csvFile))) {
+                writer.writeAll(updatedRecords);
+            }
+        } catch (IOException | CsvException e) {
+            e.printStackTrace();
+        }
+    }
+}

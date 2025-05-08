@@ -61,14 +61,13 @@
                               <Font name="Arial" size="12.0" />
                            </font>
                         </Label>
-                        <Label fx:id="user" prefHeight="17.0" prefWidth="56.0" visible="false" />
+                        <Label fx:id="user" prefHeight="17.0" prefWidth="101.0" GridPane.columnIndex="0" GridPane.rowIndex="0" />
                         <Button mnemonicParsing="false" onAction="#switchToSecondary" prefHeight="70.0" prefWidth="138.0" text="Browse Listings" GridPane.columnIndex="7" GridPane.rowIndex="1" />
                         <ImageView fitHeight="65.0" fitWidth="70.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="9" GridPane.rowIndex="1">
                            <image>
                               <Image url="@../../images/2%201.png" />
                            </image>
                         </ImageView>
-                        <Label fx:id="user" prefHeight="17.0" prefWidth="89.0" />
                      </children>
                   </GridPane>
                </children>
@@ -86,16 +85,16 @@
                   <RowConstraints maxHeight="694.3333435058594" minHeight="10.0" prefHeight="671.3333129882812" vgrow="SOMETIMES" />
                </rowConstraints>
                <children>
-                  <TableView fx:id="tableView" prefHeight="591.0" prefWidth="1846.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                  <TableView fx:id="myListings" prefHeight="591.0" prefWidth="1846.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                      <columns>
-                        <TableColumn fx:id="imageCol" prefWidth="75" text="" />
-                        <TableColumn fx:id="titleCol" editable="false" prefWidth="100" sortable="false" text="Title" />
-                        <TableColumn fx:id="descCol" editable="false" prefWidth="200" sortable="false" text="Description" />
-                        <TableColumn fx:id="priceCol" editable="false" prefWidth="100" text="Price" />
-                        <TableColumn fx:id="categoryCol" editable="false" prefWidth="100" sortable="false" text="Category" />
-                        <TableColumn fx:id="dateCol" editable="false" prefWidth="100" text="Date" />
-                        <TableColumn fx:id="locationCol" editable="false" prefWidth="100" sortable="false" text="Location" />
-                        <TableColumn fx:id="optionsCol" prefWidth="76.0" resizable="false" text="Options" />
+                        <TableColumn fx:id="imageCol2" prefWidth="161.0" text="" />
+                        <TableColumn fx:id="titleCol2" editable="false" prefWidth="197.0" sortable="false" text="Title" />
+                        <TableColumn fx:id="descCol2" editable="false" prefWidth="450.0" sortable="false" text="Description" />
+                        <TableColumn fx:id="priceCol2" editable="false" prefWidth="132.0" text="Price" />
+                        <TableColumn fx:id="categoryCol2" editable="false" prefWidth="230.0" sortable="false" text="Category" />
+                        <TableColumn fx:id="dateCol2" editable="false" prefWidth="203.0" text="Date" />
+                        <TableColumn fx:id="locationCol2" editable="false" prefWidth="136.0" sortable="false" text="Location" />
+                        <TableColumn fx:id="optionsCol" prefWidth="273.0" resizable="false" text="Options" />
                      </columns>
                      <columnResizePolicy>
                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
