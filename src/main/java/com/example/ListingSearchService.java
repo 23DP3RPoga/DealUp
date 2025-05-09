@@ -22,23 +22,24 @@ public class ListingSearchService {
     
         try (CSVReader reader = new CSVReader(new FileReader(csvFile))) {
             String[] row;
-            reader.readNext(); // Skip header line
+            reader.readNext(); //  Izlaižam pirmo rindu, kas ir virsraksts
     
             while ((row = reader.readNext()) != null) {
                 if (row.length >= 7) {
-                    // Manually check fields, skipping the price (index 3) and date (index 5)
+
                     boolean matches = false;
                     
-                    // Loop over all fields except price and date (index 3 and 5)
+
                     for (int i = 0; i < row.length; i++) {
                         if (i != 0 && i != 3 && i != 4 && i != 5 && row[i].toLowerCase().contains(keyword.toLowerCase())) {
                             matches = true;
-                            break;  // If a match is found, no need to check further fields
+                            break;  // Ja tiek atrasta atbilstība, nav nepieciešams pārbaudīt tālākos laukus
                         }
                     }
     
                     if (matches) {
-                        // Add listing if a match is found
+
+                        // Pievienojam sarakstam, ja tiek atrasta atbilstība
                         data.add(new Listing(
                                 row[0].trim(),  // image
                                 row[1].trim(),  // title
@@ -81,7 +82,7 @@ public class ListingSearchService {
                             matches = true;
                             break;  // If a match is found, no need to check further fields
                         }
-                    }
+                    } 
     
                     if (matches) {
                         // Add listing if a match is found
@@ -137,42 +138,6 @@ public class ListingSearchService {
             }
         }
     
-        return data;
-    }
-
-
-    public ObservableList<Listing> searchByOwner(String owner) throws IOException, CsvValidationException {
-        ObservableList<Listing> data = FXCollections.observableArrayList();
-        File csvFile = new File("src/main/resources/csv/listing.csv");
-
-        if (!csvFile.exists()) {
-            System.out.println("Listing CSV not found.");
-            return data;
-        }
-
-        try (CSVReader reader = new CSVReader(new FileReader(csvFile))) {
-            String[] row;
-            reader.readNext(); // Skip header line
-
-            while ((row = reader.readNext()) != null) {
-                if (row.length >= 8) {
-                    // Check if the owner matches
-                    if (row[7].trim().equals(owner)) {
-                        // Add listing if the owner matches
-                        data.add(new Listing(
-                                row[0].trim(),  // image
-                                row[1].trim(),  // title
-                                row[2].trim(),  // description
-                                row[3].trim(),  // price
-                                row[4].trim(),  // category
-                                row[5].trim(),  // date
-                                row[6].trim()   // location
-                        ));
-                    }
-                }
-            }
-        }
-
         return data;
     }
 }

@@ -9,7 +9,7 @@ public class Listing {
     private String date;
     private String location;
 
-    // Constructor
+
     public Listing(String image, String title, String description, String price, 
                    String category, String date, String location) {
         this.image = image;
@@ -21,7 +21,7 @@ public class Listing {
         this.location = location;
     }
 
-    // Getter and Setter methods for all fields
+
     public String getImage() {
         return image;
     }

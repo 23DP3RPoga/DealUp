@@ -122,14 +122,14 @@ public class PrimaryController implements Initializable {
         if (userLabel != null) {
             userLabel.setText(username);
 
-        // Read from CSV the name and surname of the user 
+        // No csv nolasas vardu un uzvardu, ja ir tad ieliek labelā
         String filePath = "src/main/resources/csv/register.csv";
         try (CSVReader reader = new CSVReader(new FileReader(filePath))) {
             List<String[]> records = reader.readAll();
             for (String[] record : records) {
-            if (record.length > 4 && record[4].equals(username)) { // Username is at index 4
-                String name = record[0]; // Name is at index 0
-                String surname = record[1]; // Surname is at index 1
+            if (record.length > 4 && record[4].equals(username)) { 
+                String name = record[0];
+                String surname = record[1];
                 Label label = (Label) root.lookup("#userLabel");
                 if (label != null) {
                 label.setText(name + " " + surname);
@@ -187,7 +187,7 @@ public class PrimaryController implements Initializable {
             return;
         }
     
-        // Convert date to string if you want to save it
+        // Convert date to string to save it in CSV
         String dateStr = birthDate.toString();
 
         // Validation: Email must contain '@' and a '.' after '@'
@@ -289,7 +289,6 @@ public class PrimaryController implements Initializable {
         String filePath = "src/main/resources/csv/register.csv";
         String user = userID.getText();
         String pass = passID.getText();
-        
 
 
         try (CSVReader reader = new CSVReader(new FileReader(filePath))) {
@@ -390,7 +389,7 @@ public class PrimaryController implements Initializable {
 
                 lastSelectedImageFile = destinationFile; // Store the selected image file
 
-                System.out.println("Image saved to: " + destinationFile.getPath());    // Nomainiju uz relative nevis absoulute
+                System.out.println("Image saved to: " + destinationFile.getPath());    
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -958,19 +957,15 @@ public class PrimaryController implements Initializable {
             // Set up options column
             optionsCol.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(null));
             optionsCol.setCellFactory(col -> new TableCell<>() {
-                private final Button editButton = new Button("Edit");
+
                 private final Button deleteButton = new Button("Delete");
-                private final HBox buttonBox = new HBox(5, editButton, deleteButton);
+                private final HBox buttonBox = new HBox(5,  deleteButton);
     
                 {
-                    editButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
+
                     deleteButton.setStyle("-fx-background-color: #f44336; -fx-text-fill: white;");
     
-                    editButton.setOnAction(event -> {
-                        Listing listing = getTableView().getItems().get(getIndex());
-                        System.out.println("Editing: " + listing.getTitle());
-                        openEditDialog(listing);
-                    });
+                   
     
                     deleteButton.setOnAction(event -> {
                         Listing listing = getTableView().getItems().get(getIndex());

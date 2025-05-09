@@ -8,18 +8,16 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-/**
- * JavaFX App
- */
+
 public class App extends Application {
 
-    private static Scene scene; // Make the scene variable static
+    private static Scene scene; // Padarīt mainīgo scene par statisku
 
     @Override
  public void start(Stage stage) {
     try {
         Parent root = FXMLLoader.load(getClass().getResource("primary.fxml"));
-        scene = new Scene(root); // Assign the scene to the static variable
+        scene = new Scene(root); 
         stage.setScene(scene);
         stage.show();
     
@@ -29,7 +27,7 @@ public class App extends Application {
     } 
 
     static void setRoot(String fxml) throws IOException {
-        scene.setRoot(loadFXML(fxml)); // Now this works because scene is static
+        scene.setRoot(loadFXML(fxml)); 
     }
 
     private static Parent loadFXML(String fxml) throws IOException {
