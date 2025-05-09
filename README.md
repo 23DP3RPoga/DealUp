@@ -36,7 +36,7 @@ Galvenais **Deal Up** mērķis ir:
 ## 🔎 Filtrēšanas un meklēšanas iespējas
 
 - Iespēja meklēt sludinājumus pēc atslēgvārdiem.
-- Filtrēšana pēc kategorijām, atrašanās vietas, cenas vai citiem parametriem.
+- Filtrēšana pēc kategorijām.
 
 ## 👤 Lietotāja profils
 
@@ -68,10 +68,6 @@ DealUp makes it easy to buy and sell items locally with just a few taps. Whether
 5. **Set Your Price** – Choose a fixed price or mark it as negotiable.  
 6. **Publish Your Ad** – Once approved, your ad is live!
 
-### Boost Your Listing (Optional)
-- Promote your ad for better visibility using our paid ad boost options.  
-- Featured ads appear at the top of search results for maximum exposure.  
-
 ---
 
 ## 3. Buying on DealUp
@@ -90,14 +86,7 @@ We care about your safety! Follow these tips:
 - **Meet in Public** – Choose a safe, well-lit place for transactions.  
 - **Check the Item First** – Always inspect before paying.  
 - **Use Secure Payment Methods** – Avoid sending money before meeting the seller.  
-- **Report Suspicious Activity** – Use the in-app reporting feature for scams or fraud.  
-
----
-
-## 5. Need Help?
-
-- Visit our [Help Center] for FAQs.  
-- Contact [Customer Support] for further assistance.  
+- **Report Suspicious Activity** – Use the in-app reporting feature for scams or fraud.   
 
 ---
 
