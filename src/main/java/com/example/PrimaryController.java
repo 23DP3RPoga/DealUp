@@ -612,10 +612,10 @@ public class PrimaryController implements Initializable {
     @FXML
     private void searchWithBoth(ActionEvent event) {
         try {
-            // Get the selected category from the MenuButton
+            
             String keyword2 = sortByCategories.getText().toLowerCase();
 
-            // Get the input from the TextField
+            
             String keyword = searchBar.getText().toLowerCase();
 
             // Ensure the category is not "Categories" (default/reset state)
@@ -916,7 +916,11 @@ public class PrimaryController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-
+         if (categoryID == null) {
+             System.out.println("categoryID is null! Check your FXML file.");
+         } else {
+             categoryID.getItems().addAll(category);
+         }
     
     
         if (myListings != null) {
