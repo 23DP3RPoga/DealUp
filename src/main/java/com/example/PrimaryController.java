@@ -865,7 +865,7 @@ public class PrimaryController implements Initializable {
         Task<ObservableList<Listing>> task = new Task<>() {
             @Override
             protected ObservableList<Listing> call() throws Exception {
-                String username = "Admin1";
+                String username = user.getText();
                 System.out.println(username+"Test");
                 ObservableList<Listing> data = FXCollections.observableArrayList();
                 File csvFile = new File("src\\main\\resources\\csv\\listing.csv");
@@ -916,12 +916,12 @@ public class PrimaryController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        
          if (categoryID == null) {
              System.out.println("categoryID is null! Check your FXML file.");
          } else {
              categoryID.getItems().addAll(category);
          }
-    
     
         if (myListings != null) {
             // Set up table columns
@@ -1054,7 +1054,7 @@ public class PrimaryController implements Initializable {
                         } else {
                             feeAmount = price * 0.018; // 1.4% fee if price is above 2000 EUR
                         }
-            
+                        
                         fee.setText(String.format("Fee: €%.2f", feeAmount)); // Update the fee label
                     } catch (NumberFormatException e) {
                         fee.setText("Invalid price"); // Handle invalid input
@@ -1063,44 +1063,7 @@ public class PrimaryController implements Initializable {
             }
         }
     
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        private void openEditDialog(Listing listing) {
-        // Open a dialog to edit the listing details
-        // For now, we'll just update the title of the listing as an example
-
-        TextInputDialog dialog = new TextInputDialog(listing.getTitle());
-        dialog.setTitle("Edit Listing");
-        dialog.setHeaderText("Edit the title of the listing:");
-        dialog.setContentText("Title:");
-
-        Optional<String> result = dialog.showAndWait();
-        result.ifPresent(newTitle -> {
-            // Update the title of the listing in the table view
-            listing.setTitle(newTitle);
-            // After editing, update the CSV file
-            updateListingInFile(listing);
-        });
-    }
-
+  
     // Delete the listing from the table and CSV file
     private void deleteListing(Listing listing) {
         // Remove the listing from the table view
@@ -1110,44 +1073,7 @@ public class PrimaryController implements Initializable {
         deleteListingFromFile(listing);
     }
 
-    // Update the modified listing in the CSV file
-    private void updateListingInFile(Listing updatedListing) {
-        File csvFile = new File("src/main/resources/csv/listing.csv");
 
-        if (!csvFile.exists()) {
-            System.out.println("Listing CSV not found.");
-            return;
-        }
-
-        try (CSVReader reader = new CSVReader(new FileReader(csvFile))) {
-            List<String[]> records = reader.readAll();
-            List<String[]> updatedRecords = new ArrayList<>();
-
-            for (String[] record : records) {
-                if (record.length >= 8 && record[1].equals(updatedListing.getTitle())) {
-                    // Update the record with new values
-                    record[0] = updatedListing.getImage(); // Update image path
-                    record[1] = updatedListing.getTitle(); // Update title
-                    record[2] = updatedListing.getDescription(); // Update description
-                    record[3] = updatedListing.getPrice(); // Update price
-                    record[4] = updatedListing.getCategory(); // Update category
-                    // Update date
-                    LocalDateTime now = LocalDateTime.now();
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-                    record[5] = now.format(formatter); // Update date with the current local time
-                    record[6] = updatedListing.getLocation(); // Update location
-                }
-                updatedRecords.add(record);
-            }
-
-            // Write the updated records back to the CSV file
-            try (CSVWriter writer = new CSVWriter(new FileWriter(csvFile))) {
-                writer.writeAll(updatedRecords);
-            }
-        } catch (IOException | CsvException e) {
-            e.printStackTrace();
-        }
-    }
 
     // Delete the listing from the CSV file
     private void deleteListingFromFile(Listing listing) {
